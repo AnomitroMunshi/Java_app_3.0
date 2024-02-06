@@ -11,6 +11,7 @@ pipeline{
         string(name: 'ImageName', description: "name of the docker build", defaultValue: 'javapp')
         string(name: 'ImageTag', description: "tag of the docker build", defaultValue: 'v1')
         string(name: 'DockerHubUser', description: "name of the Application", defaultValue: 'anomitro')
+        string(name: 'ArtifactoryURL', description: "URL of the Artifactory server", defaultValue: 'http://54.193.4.0:8082')
     }
 
     stages{
@@ -78,7 +79,12 @@ pipeline{
             when { expression {  params.action == 'create' } }
                 steps {
                     script {
-                        jfrogCurl('target/*.jar', 'http://13.52.215.59:8082', 'example-repo-local')
+                        echo "Attempting to push artifacts to JFrog Artifactory"
+                        def credentials = credentials('jfrogArtifactory')
+                        echo "Using credentials: ${credentials.username}"
+                        def curlCommand = "curl -X PUT -u ${credentials.username}:${credentials.password} -T target/*.jar ${params.ArtifactoryURL}/artifactory/example-repo-local/"
+                        echo "Executing curl command: $curlCommand"
+                        sh curlCommand
                 }
             }
         }
