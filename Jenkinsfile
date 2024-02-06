@@ -80,9 +80,7 @@ pipeline{
                 steps {
                     script {
                         echo "Attempting to push artifacts to JFrog Artifactory"
-                        def credentials = credentials('jfrogArtifactory')
-                        echo "Using credentials: ${credentials.username}"
-                        def curlCommand = "curl -X PUT -u ${credentials.username}:${credentials.password} -T target/*.jar ${params.ArtifactoryURL}/artifactory/example-repo-local/"
+                        def curlCommand = "curl -X PUT -u admin:Admin@123 -T target/*.jar ${params.ArtifactoryURL}/artifactory/example-repo-local/"
                         echo "Executing curl command: $curlCommand"
                         sh curlCommand
                 }
