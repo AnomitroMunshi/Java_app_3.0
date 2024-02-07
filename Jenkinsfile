@@ -82,6 +82,8 @@ pipeline{
                         echo "Attempting to push artifacts to JFrog Artifactory"
                          withCredentials([usernamePassword(credentialsId: 'ARTIFACTORY', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_PASSWORD')]) {
                             // Use the ARTIFACTORY_USER and ARTIFACTORY_PASSWORD variables
+                             echo ${ARTIFACTORY_USER}
+                             echo ${ARTIFACTORY_PASSWORD}
                             sh "curl -u ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} -X PUT ${server}/artifactory/${repo}/artifact-name -T ${fileToUpload}"
                              def curlCommand = "curl -X PUT -u ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} -T target/*.jar ${params.ArtifactoryURL}/artifactory/example-repo-local/"
                             echo "Executing curl command: $curlCommand"
