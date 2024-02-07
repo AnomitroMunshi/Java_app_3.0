@@ -11,7 +11,7 @@ pipeline{
         string(name: 'ImageName', description: "name of the docker build", defaultValue: 'javapp')
         string(name: 'ImageTag', description: "tag of the docker build", defaultValue: 'v1')
         string(name: 'DockerHubUser', description: "name of the Application", defaultValue: 'anomitro')
-        string(name: 'ArtifactoryURL', description: "URL of the Artifactory server", defaultValue: 'http://54.193.4.0:8082')
+        string(name: 'ArtifactoryURL', description: "URL of the Artifactory server", defaultValue: 'http://18.144.169.113:8082')
     }
 
     stages{
@@ -80,9 +80,14 @@ pipeline{
                 steps {
                     script {
                         echo "Attempting to push artifacts to JFrog Artifactory"
-                        def curlCommand = "curl -X PUT -u admin:Admin@123 -T target/*.jar ${params.ArtifactoryURL}/artifactory/example-repo-local/"
-                        echo "Executing curl command: $curlCommand"
-                        sh curlCommand
+                         withCredentials([usernamePassword(credentialsId: 'ARTIFACTORY', usernameVariable: 'ARTIFACTORY_USER', passwordVariable: 'ARTIFACTORY_PASSWORD')]) {
+                            // Use the ARTIFACTORY_USER and ARTIFACTORY_PASSWORD variables
+                            sh "curl -u ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} -X PUT ${server}/artifactory/${repo}/artifact-name -T ${fileToUpload}"
+                             def curlCommand = "curl -X PUT -u ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} -T target/*.jar ${params.ArtifactoryURL}/artifactory/example-repo-local/"
+                            echo "Executing curl command: $curlCommand"
+                            sh curlCommand
+                    }
+                        
                 }
             }
         }
